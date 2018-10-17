@@ -563,7 +563,7 @@ function export_confluency_GUI_callback(varargin)
     else 
         export_fig = figure(...
             'units', 'pixels',...
-            'Position', [ (MaxMonitorX-gui_width*0.3)/2 - offset, (MaxMonitorY-gui_height*0.5)/2 + offset, gui_width*0.3, gui_height*0.5 ], ...
+            'Position', [ (MaxMonitorX-gui_width*0.3)/2 - offset, (MaxMonitorY-gui_height*0.5)/2 + offset, gui_width*0.5, gui_height*0.5 ], ...
             'Name','Confluency Table',...
             'NumberTitle','off',...
             'Menubar','none',...
@@ -574,8 +574,12 @@ function export_confluency_GUI_callback(varargin)
     content_panel = sub_panel(export_fig, [0 0 1 1], '', 'lefttop', green_blue, lt_gray, 14, 'serif');
 
     save_common_name='Confluency Table';
-    label(content_panel, [.03 .68 .2 .09], 'Name:', 'right', 'k', lt_gray, .6, 'sans serif', 'normal');
+    label(content_panel, [.03 .68 .2 .09], 'Save Name:', 'right', 'k', lt_gray, .6, 'sans serif', 'normal');
     save_common_name_edit = editbox(content_panel, [.27 .69 .7 .09], save_common_name, 'left', 'k', 'w', .6, 'normal');    
+
+    data_source_name = raw_images_path;
+    label(content_panel, [.03 .37 .2 .09], 'Data Source :', 'right', 'k', lt_gray, .6, 'sans serif', 'normal');
+    save_folder_source_name = editbox(content_panel, [.27 .37 .7 .09], data_source_name, 'left', 'k', 'w', .6, 'normal');    
     
     export_range = 'All';        
     label(content_panel, [.03 .57 .2 .09], 'Range:', 'right', 'k', lt_gray, .6, 'sans serif', 'normal');
@@ -587,7 +591,9 @@ function export_confluency_GUI_callback(varargin)
    
     function export_callback(varargin)
         export_range = get(export_range_edit, 'String');
-        export_confluencies(export_range, save_common_name);
+        save_common_name = get(save_common_name_edit,'String');
+        data_source_name = get(save_folder_source_name,'String');
+        export_confluencies(export_range, save_common_name,data_source_name);
         if ishandle(export_fig), close(export_fig); end
     end
    
@@ -597,7 +603,7 @@ function export_confluency_GUI_callback(varargin)
 end
 
 % Export images to file
-function export_confluencies(range, save_name)
+function export_confluencies(range, save_name, source_name)
     % directory
     sdir = uigetdir(pwd,'Select Export Path');
     if sdir ~= 0
@@ -648,7 +654,8 @@ function export_confluencies(range, save_name)
             end
                         
             % convert to table and save
-            save_table = table(image_names, confluencies,'VariableNames',{'Image_Name', 'Percent_Confluency'});
+            source_names = repmat(string(source_name),size(confluencies,1),1);
+            save_table = table(source_names, image_names, confluencies,'VariableNames',{'Data_Source','Image_Name', 'Percent_Confluency'});
             save_name = [export_confluencies_path  save_name '.csv'];
             writetable(save_table, save_name);
             

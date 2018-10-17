@@ -19,11 +19,14 @@ function plotResults(name, days,values,modelFun, coeff)
     equation = ['Fitted Function: ' '$$ f(x) = 100/(1+e^{(' num2str(-1*coeff(1),3) ')(x+(' num2str(-1*coeff(2),3) '))}) $$'];
     plotTitle= [plotTitle ' | ' equation];
 
+    minTime = days(1);
+    maxTime = days(end);
+    
     f = figure();
     figure(f); clf;
     figure(f); scatter(days,values,50,'filled','b'); 
-    figure(f); xlim([0,10]); figure(f); ylim([0,100]);
-    figure(f); hold on; line([0:.1:10], modelFun(coeff,[0:.1:10]), 'Color','r'); hold off;
+    figure(f); xlim([minTime - 2,maxTime + 2]); figure(f); ylim([0,100]);
+    figure(f); hold on; line([minTime:.1:maxTime], modelFun(coeff,[minTime:.1:maxTime]), 'Color','r'); hold off;
     figure(f); title(plotTitle,'Interpreter', 'latex','FontSize',20);
     figure(f); xlabel('Days'); figure(f); ylabel('Confluency');
     figure(f); legend('Estimated Confluencies','Fitted Logistic Function');
