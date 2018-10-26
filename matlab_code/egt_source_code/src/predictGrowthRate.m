@@ -1,14 +1,13 @@
 % Machine Learning growth rate predictor
 function predictGrowthRate()
-clear; clc;
+    clear; clc;
 
-%     sdir = uigetdir(pwd,'Select Image Folder Path');
-%     image_struct = dir([sdir '/' '*' 'Phase' '*tif']);
     modelFun =  @(p,x) 100./(1+exp(-p(1).*(x-p(2)))); % growth function (logistic growth)
     day_cut_off = 3; % last day to use when making predictions
 
     % Select which data set to use (confluency predictions)
-    all_data_pts = getTableData();
+    tables_used = ["./growth_rates/181005_124727_RB177 RB183 6WP.csv"]
+    all_data_pts = getTableData(tables_used);
 
     total_squared_error = 0;
     for i = 1:size(all_data_pts,1) % make predictions on each image
@@ -16,8 +15,8 @@ clear; clc;
         days = all_data_pts{i,2};
         values = all_data_pts{i,3};
         
-        [nnVals, nnCoeff] = getNearestNeighbor(all_data_pts, name, days, values, day_cut_off); % uses nearest-neighbors to pick coeff. of closest neighbor
-        predVals = modelFun(nnCoeff,days(day_cut_off+1:end)');
+        [nnVals, nnCoeff] = getNearestNeighbor(all_data_pts, name, days, values, day_cut_off, modelFun); % uses nearest-neighbors to pick coeff. of closest neighbor
+        predVals = modelFun(nnCoeff,days(day_cut_off+1:end)'); % make predictions
         total_squared_error = total_squared_error + (predVals - values(day_cut_off+1:end)').^2;
         
 %         plotPredictions(days,values,nnVals,nnCoeff,day_cut_off);
@@ -27,11 +26,13 @@ clear; clc;
 end
 
 % gets data from confluency table in ordering of days and values, by name
-function data_pts = getTableData()
-    t1 = readtable('./src/Confluency Table.csv','Delimiter','comma'); % will test from here (leave one out)
-    t2 = readtable('./src/Confluency Table2.csv','Delimiter','comma');
-    
-    confluency_table = vertcat(t1,t2);
+function data_pts = getTableData(tables)
+    confluency_table = readtable(tables{1},'Delimiter','comma');
+    for i = 2:numel(tables) % concatenate tables
+        t = readtable(tables{i},'Delimiter','comma'); % input data
+        confluency_table = vertcat(confluency_table,t);
+    end
+        
     concat_confluency_table = cell(size(confluency_table,1),2);
     concat_confluency_table(:,1) = strcat(confluency_table.Data_Source, '_', confluency_table.Image_Name);
     concat_confluency_table(:,2) = num2cell(confluency_table.Percent_Confluency);
@@ -57,11 +58,10 @@ function data_pts = getTableData()
         data_pts(i,2) = {days};
         data_pts(i,3) = {vals};
     end
-
 end
 
 % Gets coefficients of nearest neighbor look-up
-function [nnVals, nnCoeff] = getNearestNeighbor(all_data_pts, image_name, days, values,day_cut_off)
+function [nnVals, nnCoeff] = getNearestNeighbor(all_data_pts, image_name, days, values,day_cut_off,modelFun)
     all_data_pts(find(contains(all_data_pts(:,1),image_name)),:) = []; % remove current data
     tAllDays = all_data_pts(:,2);
     tAllVals = all_data_pts(:,3);
@@ -86,12 +86,13 @@ function [nnVals, nnCoeff] = getNearestNeighbor(all_data_pts, image_name, days, 
     allValsT = allVals(:,1:day_cut_off);
     
     inds = find(ismember(allDaysT,daysT,'rows')); % re-compute this values
-    nnInd = inds(knnsearch(allValsT(inds,:),valuesT,'Distance','euclidean')); % find closest neighbor
+    nnInd = inds(knnsearch(allValsT(inds,:),valuesT,'K',3,'Distance','euclidean')); % find closest neighbor
+    
+    nnFitVals = mean(allVals(nnInd,:));
     
     % predict growth
-    modelFun =  @(p,x) 100./(1+exp(-p(1).*(x-p(2)))); % growth function (logistic growth)
     startParams = [.8, 4]; % Change?
-    nnCoeff = nlinfit(allDays(nnInd,:), allVals(nnInd,:), modelFun, startParams); %non-linear fit (using LM opt.)        
+    nnCoeff = nlinfit(allDays(nnInd(1),:), nnFitVals, modelFun, startParams); %non-linear fit (using LM opt.)        
     nnVals = allVals(nnInd,1:numel(values)); % nearest neighbor values
 end
 

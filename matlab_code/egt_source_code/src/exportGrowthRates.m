@@ -1,15 +1,8 @@
-% Code to export and fit growth rates for many cells
+% Code to fit growth and save growth rates for many cells
 
 function exportGrowthRates(image_names, confluencies, export_growths_path)
     startParams = [.8, 4]; % Change?
     modelFun =  @(p,x) 100./(1+exp(-p(1).*(x-p(2)))); % growth function (logistic growth)
-
-    if exist('./growth_rates/modeled_data.mat') ~= 0
-        loader = load('./growth_rates/modeled_data.mat');
-        value_func_map = loader.value_func_map;
-    else
-        value_func_map = containers.Map('KeyType','char','ValueType','any');
-    end
     
     temp_image_names = image_names;
     
@@ -25,28 +18,8 @@ function exportGrowthRates(image_names, confluencies, export_growths_path)
         ind = find(contains(image_names, unique_temp_image_names(i))); % group all images of the same well
         values = confluencies(ind); % confluency estimates
         days = double(extractBetween(image_names(ind),26,28)); % day estimate was taken on
-        growthRates{i} = estimateGrowthRate(values, days, value_func_map, modelFun, startParams);
+        growthRates{i} = nlinfit(days, values, modelFun, startParams); %non-linear fit (using LM opt.)
         plotResults(unique_temp_image_names(i),days,values,modelFun, growthRates{i},export_growths_path);
-    end
-    
-    % save value_func_map to file (overwrite if already exists)
-    save('./growth_rates/modeled_data.mat','value_func_map');
-end
-
-% Input confluency estimate values and days they were recorded on
-% Output estimated growth rate
-function coefEsts = estimateGrowthRate(values, days, value_func_map, modelFun, startParams)    
-    % keys should be confluency estimates, values should be params
-    if max(values) >= 0 % TODO: Change this ? How to use an NN approach? find growth rate if more than 60% confluent
-        keyd = sprintf('%.4f,',days'); keyd = keyd(1:end-1);
-        keyv = sprintf('%.4f,',values'); keyv = keyv(1:end-1);
-        key = [keyd ';' keyv];
-        if isKey(value_func_map, key)
-            coefEsts = value_func_map(key);
-        else
-            coefEsts = nlinfit(days, values, modelFun, startParams); %non-linear fit (using LM opt.)
-            value_func_map(key) = coefEsts;
-        end     
     end    
 end
 

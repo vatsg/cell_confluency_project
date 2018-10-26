@@ -1,16 +1,5 @@
 % Disclaimer:  IMPORTANT:  This software was developed at the National Institute of Standards and Technology by employees of the Federal Government in the course of their official duties. Pursuant to title 17 Section 105 of the United States Code this software is not subject to copyright protection and is in the public domain. This is an experimental system. NIST assumes no responsibility whatsoever for its use by other parties, and makes no guarantees, expressed or implied, about its quality, reliability, or any other characteristic. We would appreciate acknowledgment if the software is used. This software can be redistributed and/or modified freely provided that any derivative works bear some notice that they are derived from it, and any modified versions bear some notice that they have been modified.
 
-% OPTIMAL PARAMETERS 
-% 180328_121909_GMP047, 180328_125817_GMP007 P1-P2, 180404_121829_GMP007, 180404_123306_GMP087
-% 4x : MCA = 650px, FHST = 500px, Erosion = 1, Dilation = 0, Secondary Erosion = 4, Greedy = 0
-% 10x: MCA = 2750px, FHST = 2000px, Erosion = 1, Dilation = 0, Seondary Erosion = 4, Greedy = 0
-
-% 180328_123423_RB137, 180328_124322_RB049-RB182, 180404_124147_RB037
-% 4x : MCA = 650px, FHST = 500px, Erosion = 1, Dilation = 0, Secondary Erosion = 2, Greedy = 0
-% 10x: MCA = 2750px, FHST = 2000px, Erosion = 1, Dilation = 0, Secondary Erosion = 2, Greedy = 0
-
-% 181005_124727_RB177 RB183 6WP: MCA: 3000, FHST: 2750, Erosion = 2, Dilation = 2 Seondary Erosion: 6, Greedy = -1
-
 function Edge_Detection_GUI_v1()
 clear; clc;
 
