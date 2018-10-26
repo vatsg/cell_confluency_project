@@ -14,13 +14,13 @@ imgs/
 	NIST_Logo.tif
 src/
 	EGT_Segmentation.m
-    exportGrowthRates.m
+	exportGrowthRates.m
 	fill_holes.m
 	find_edges.m
 	find_edges_labeled.m
-    modelGrowthRate.m
+	modelGrowthRate.m
 	percentile_computation.m
-    predictGrowthRate.m
+	predictGrowthRate.m
 	print_to_command.m
 	print_update.m
 	superimpose_colormap_contour.m
