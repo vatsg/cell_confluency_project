@@ -9,7 +9,6 @@ To Run MATLAB code:
 4) Enter a common name for your files in the "Raw Common Name" text box, without the image extension.
    For example: if you have files named ["File A.tif", "File B.tif", "File C.tif"], then a common name could be "File" 
 5) Click "Load Images" to run
-6) The confluency (in %) is shown above the segmented image in the GUI
 
 Please see a much more detailed explanation of the functions and parameters in the file at: cell_confluency_project/matlab_code/egt_source_code/Edge_Detection_Readme.txt
 
