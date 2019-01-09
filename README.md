@@ -12,5 +12,5 @@ To Run MATLAB code:
 
 Please see a much more detailed explanation of the functions and parameters in the file at: cell_confluency_project/matlab_code/egt_source_code/Edge_Detection_Readme.txt
 
-This uses the EGT Segmentation algorithm and software developed at the NIST:
+This uses a slightly adapted version of the EGT Segmentation algorithm and software developed at the NIST:
 https://isg.nist.gov/deepzoomweb/resources/csmet/pages/EGT_segmentation/EGT_segmentation.html
